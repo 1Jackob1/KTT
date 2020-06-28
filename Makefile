@@ -9,3 +9,9 @@ drop-db:
 reload-db:
 	$(MAKE) -f $(THIS_FILE) drop-db
 	$(MAKE) -f $(THIS_FILE) create-db
+
+migrations-diff:
+	$(PHP) bin/console doctrine:migrations:diff
+
+migrations-latest:
+	$(PHP) bin/console doctrine:migrations:migrate latest
