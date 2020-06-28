@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -47,6 +49,34 @@ class User implements TimestampableInterface
      * @var string
      */
     private $timeZone;
+
+    /**
+     * @var Task[]|Collection
+     *
+     * @ORM\ManyToMany(targetEntity="App\Entity\Task", mappedBy="executors")
+     * @ORM\JoinTable(
+     *     name="users__tasks",
+     *     joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=false)}
+     *     )
+     */
+    private $tasks;
+
+    /**
+     * User constructor.
+     */
+    public function __construct()
+    {
+        $this->tasks = new ArrayCollection();
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getId() . ' ' . $this->getFirstName() . ' ' . $this->getSecondName() . ' ' . $this->getLastName();
+    }
 
     /**
      * @return int
@@ -134,5 +164,51 @@ class User implements TimestampableInterface
     public function getTimeZone(): string
     {
         return $this->timeZone;
+    }
+
+    /**
+     * @param Task[]|Collection $tasks
+     *
+     * @return User
+     */
+    public function setTasks($tasks): User
+    {
+        $this->tasks = $tasks;
+
+        return $this;
+    }
+
+    /**
+     * @param Task $task
+     *
+     * @return User
+     */
+    public function addTask(Task $task): User
+    {
+        $this->getTasks()->set($task->getId(), $task);
+        $task->addExecutor($this);
+
+        return $this;
+    }
+
+    /**
+     * @param Task $task
+     *
+     * @return User
+     */
+    public function removeTask(Task $task): User
+    {
+        $this->getTasks()->remove($task->getId());
+        $task->removeExecutor($this);
+
+        return $this;
+    }
+
+    /**
+     * @return Task[]|Collection
+     */
+    public function getTasks()
+    {
+        return $this->tasks;
     }
 }
