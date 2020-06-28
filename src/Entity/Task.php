@@ -61,11 +61,19 @@ class Task implements TimestampableInterface
     private $executors;
 
     /**
+     * @var Session[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Session", mappedBy="task")
+     */
+    private $sessions;
+
+    /**
      * Task constructor.
      */
     public function __construct()
     {
         $this->executors = new ArrayCollection();
+        $this->sessions = new ArrayCollection();
     }
 
     /**
@@ -200,4 +208,47 @@ class Task implements TimestampableInterface
         return $this->executors;
     }
 
+    /**
+     * @param Session[]|Collection $sessions
+     *
+     * @return Task
+     */
+    public function setSessions($sessions): Task
+    {
+        $this->sessions = $sessions;
+
+        return $this;
+    }
+
+    /**
+     * @param Session $session
+     *
+     * @return Task
+     */
+    public function addSession(Session $session): Task
+    {
+        $this->getSessions()->set($session->getId(), $session);
+
+        return $this;
+    }
+
+    /**
+     * @param Session $session
+     *
+     * @return Task
+     */
+    public function removeSession(Session $session): Task
+    {
+        $this->getSessions()->remove($session->getId());
+
+        return $this;
+    }
+
+    /**
+     * @return Session[]|Collection
+     */
+    public function getSessions()
+    {
+        return $this->sessions;
+    }
 }

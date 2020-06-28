@@ -63,6 +63,13 @@ class User implements TimestampableInterface
     private $tasks;
 
     /**
+     * @var Session[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Session", mappedBy="user")
+     */
+    private $sessions;
+
+    /**
      * User constructor.
      */
     public function __construct()
@@ -210,5 +217,49 @@ class User implements TimestampableInterface
     public function getTasks()
     {
         return $this->tasks;
+    }
+
+    /**
+     * @param Session[]|Collection $sessions
+     *
+     * @return User
+     */
+    public function setSessions($sessions): User
+    {
+        $this->sessions = $sessions;
+
+        return $this;
+    }
+
+    /**
+     * @param Session $session
+     *
+     * @return User
+     */
+    public function addSession(Session $session): User
+    {
+        $this->getSessions()->set($session->getId(), $session);
+
+        return $this;
+    }
+
+    /**
+     * @param Session $session
+     *
+     * @return User
+     */
+    public function removeSession(Session $session): User
+    {
+        $this->getSessions()->remove($session->getId());
+
+        return $this;
+    }
+
+    /**
+     * @return Session[]|Collection
+     */
+    public function getSessions()
+    {
+        return $this->sessions;
     }
 }
