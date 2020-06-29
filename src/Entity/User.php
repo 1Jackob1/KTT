@@ -2,18 +2,24 @@
 
 namespace App\Entity;
 
+use App\Form\UserFormType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Table(name="users")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\HasLifecycleCallbacks()
+ *
+ * @JMS\ExclusionPolicy("all")
  */
 class User implements TimestampableInterface
 {
     use TimestampableTrait;
+
+    public const FULL_CARD = 'full_card';
 
     /**
      * @var int
@@ -21,20 +27,29 @@ class User implements TimestampableInterface
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(name="id", type="integer", nullable=false)
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
     private $id;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="first_name", type="string", nullable=false)
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
     private $firstName;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="second_name", type="string", nullable=false)
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
     private $secondName;
 
@@ -42,23 +57,34 @@ class User implements TimestampableInterface
      * @var string|null
      *
      * @ORM\Column(name="last_name", type="string", nullable=true)
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
     private $lastName;
 
     /**
-     * @var string
+     * @var string|null
+     *
+     * @ORM\Column(name="timezone", type="string", nullable=false, options={"default" = "Asia/Vladivostok"})
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
-    private $timeZone;
+    private $timezone;
 
     /**
      * @var Task[]|Collection
      *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Task", mappedBy="executors")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Task", inversedBy="executors")
      * @ORM\JoinTable(
      *     name="users__tasks",
      *     joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=false)}
      *     )
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
     private $tasks;
 
@@ -66,6 +92,9 @@ class User implements TimestampableInterface
      * @var Session[]|Collection
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Session", mappedBy="user")
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
     private $sessions;
 
@@ -75,6 +104,7 @@ class User implements TimestampableInterface
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
+        $this->sessions = new ArrayCollection();
     }
 
     /**
@@ -106,9 +136,9 @@ class User implements TimestampableInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
@@ -126,9 +156,9 @@ class User implements TimestampableInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSecondName(): string
+    public function getSecondName(): ?string
     {
         return $this->secondName;
     }
@@ -154,23 +184,23 @@ class User implements TimestampableInterface
     }
 
     /**
-     * @param string $timeZone
+     * @param string $timezone
      *
      * @return User
      */
-    public function setTimeZone(string $timeZone): User
+    public function setTimezone(string $timezone): User
     {
-        $this->timeZone = $timeZone;
+        $this->timezone = $timezone;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTimeZone(): string
+    public function getTimezone(): ?string
     {
-        return $this->timeZone;
+        return $this->timezone;
     }
 
     /**
@@ -261,5 +291,22 @@ class User implements TimestampableInterface
     public function getSessions()
     {
         return $this->sessions;
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return User
+     */
+    public function updateData(User $user): User
+    {
+        return $this
+            ->setFirstName($user->getFirstName())
+            ->setSecondName($user->getSecondName())
+            ->setLastName($user->getLastName())
+            ->setTimezone($user->getTimezone())
+            ->setTasks($user->getTasks())
+            ->setSessions($user->getSessions())
+            ;
     }
 }
