@@ -209,7 +209,9 @@ class Task implements TimestampableInterface, UpdatableInterface
      */
     public function addExecutor(User $executor): Task
     {
-        $this->getExecutors()->set($executor->getId(), $executor);
+        if (!$this->getExecutors()->contains($executor)) {
+            $this->getExecutors()->add($executor);
+        }
 
         return $this;
     }
@@ -221,7 +223,7 @@ class Task implements TimestampableInterface, UpdatableInterface
      */
     public function removeExecutor(User $executor): Task
     {
-        $this->getExecutors()->remove($executor->getId());
+        $this->getExecutors()->removeElement($executor);
 
         return $this;
     }
@@ -253,7 +255,10 @@ class Task implements TimestampableInterface, UpdatableInterface
      */
     public function addSession(Session $session): Task
     {
-        $this->getSessions()->set($session->getId(), $session);
+       if (!$this->getSessions()->contains($session)) {
+           $this->getSessions()->add($session);
+           $session->setTask($this);
+       }
 
         return $this;
     }
@@ -265,7 +270,7 @@ class Task implements TimestampableInterface, UpdatableInterface
      */
     public function removeSession(Session $session): Task
     {
-        $this->getSessions()->remove($session->getId());
+        $this->getSessions()->removeElement($session);
 
         return $this;
     }

@@ -87,7 +87,7 @@ class BaseCRUDController extends AbstractFOSRestController
         $form = $this->createForm($formType);
 
         try {
-            $task = $this->handleRequestWithJSONContent($request, $form);
+            $object = $this->handleRequestWithJSONContent($request, $form);
         } catch (Throwable $e) {
             $this->logCriticalError('Error while handling form.', $e);
 
@@ -96,14 +96,14 @@ class BaseCRUDController extends AbstractFOSRestController
 
 
         try {
-            $this->save($task);
+            $this->save($object);
         } catch (Throwable $e) {
             $this->logCriticalError(sprintf('Error while saving: %s.', $className), $e);
 
             return $this->getResponse(MessageUtil::CAN_NOT_SAVE, MessageUtil::ERROR, 400);
         }
 
-        return $this->getResponse($task, MessageUtil::SUCCESS, Response::HTTP_OK, $serializationGroups);
+        return $this->getResponse($object, MessageUtil::SUCCESS, Response::HTTP_OK, $serializationGroups);
     }
 
     /**

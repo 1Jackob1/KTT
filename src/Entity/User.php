@@ -116,9 +116,9 @@ class User implements TimestampableInterface, UpdatableInterface
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -222,8 +222,10 @@ class User implements TimestampableInterface, UpdatableInterface
      */
     public function addTask(Task $task): User
     {
-        $this->getTasks()->set($task->getId(), $task);
-        $task->addExecutor($this);
+        if (!$this->getTasks()->contains($task)) {
+            $this->getTasks()->add($task);
+            $task->addExecutor($this);
+        }
 
         return $this;
     }
@@ -235,7 +237,7 @@ class User implements TimestampableInterface, UpdatableInterface
      */
     public function removeTask(Task $task): User
     {
-        $this->getTasks()->remove($task->getId());
+        $this->getTasks()->removeElement($task);
         $task->removeExecutor($this);
 
         return $this;
@@ -268,7 +270,10 @@ class User implements TimestampableInterface, UpdatableInterface
      */
     public function addSession(Session $session): User
     {
-        $this->getSessions()->set($session->getId(), $session);
+        if (!$this->getSessions()->contains($session)) {
+            $this->getSessions()->add($session);
+            $session->setUser($this);
+        }
 
         return $this;
     }
@@ -280,7 +285,7 @@ class User implements TimestampableInterface, UpdatableInterface
      */
     public function removeSession(Session $session): User
     {
-        $this->getSessions()->remove($session->getId());
+        $this->getSessions()->removeElement($session);
 
         return $this;
     }
