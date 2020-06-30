@@ -15,7 +15,7 @@ use JMS\Serializer\Annotation as JMS;
  *
  * @JMS\ExclusionPolicy("all")
  */
-class User implements TimestampableInterface
+class User implements TimestampableInterface, UpdatableInterface
 {
     use TimestampableTrait;
 
@@ -294,11 +294,9 @@ class User implements TimestampableInterface
     }
 
     /**
-     * @param User $user
-     *
-     * @return User
+     * @inheritDoc
      */
-    public function updateData(User $user): User
+    public function update($user)
     {
         return $this
             ->setFirstName($user->getFirstName())
@@ -307,6 +305,6 @@ class User implements TimestampableInterface
             ->setTimezone($user->getTimezone())
             ->setTasks($user->getTasks())
             ->setSessions($user->getSessions())
-            ;
+        ;
     }
 }

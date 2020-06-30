@@ -6,15 +6,20 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Table(name="tasks")
  * @ORM\Entity(repositoryClass="App\Repository\TaskRepository")
  * @ORM\HasLifecycleCallbacks()
+ *
+ * @JMS\ExclusionPolicy("all")
  */
-class Task implements TimestampableInterface
+class Task implements TimestampableInterface, UpdatableInterface
 {
     use TimestampableTrait;
+
+    public const FULL_CARD = 'full_card';
 
     /**
      * @var int
@@ -22,20 +27,29 @@ class Task implements TimestampableInterface
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(name="id", type="integer", nullable=false)
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
     private $id;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="title", type="text", nullable=false)
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
     private $title;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="description", type="text", nullable=false)
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
     private $description;
 
@@ -43,6 +57,9 @@ class Task implements TimestampableInterface
      * @var int
      *
      * @ORM\Column(name="priority", type="integer", nullable=false, options={"default" = 1})
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
     private $priority = 1;
 
@@ -50,13 +67,19 @@ class Task implements TimestampableInterface
      * @var int
      *
      * @ORM\Column(name="estimate", type="integer", nullable=true)
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
-    private $estimate;
+    private $estimate = 1;
 
     /**
      * @var User[]|Collection
      *
      * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="tasks")
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
     private $executors;
 
@@ -64,6 +87,9 @@ class Task implements TimestampableInterface
      * @var Session[]|Collection
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Session", mappedBy="task")
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={User::FULL_CARD})
      */
     private $sessions;
 
@@ -97,9 +123,9 @@ class Task implements TimestampableInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTitle(): string
+    public function getTitle(): ?string
     {
         return $this->title;
     }
@@ -117,9 +143,9 @@ class Task implements TimestampableInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -250,5 +276,20 @@ class Task implements TimestampableInterface
     public function getSessions()
     {
         return $this->sessions;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function update($task)
+    {
+        $this
+            ->setTitle($task->getTitle())
+            ->setDescription($task->getDescription())
+            ->setEstimate($task->getEstimate())
+            ->setPriority($task->getPriority())
+            ->setExecutors($task->getExecutors())
+            ->setSessions($task->getSessions())
+        ;
     }
 }
