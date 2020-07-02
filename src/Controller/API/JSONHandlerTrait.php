@@ -2,10 +2,13 @@
 
 namespace App\Controller\API;
 
+use App\Exception\IncorrectDataException;
 use Exception;
+use Symfony\Component\Form\Exception\AlreadySubmittedException;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\ConstraintViolation;
 
 trait JSONHandlerTrait
 {
@@ -27,6 +30,9 @@ trait JSONHandlerTrait
      * @param array $additionalData
      * @param bool $clearMissing
      *
+     * @throws IncorrectDataException
+     * @throws AlreadySubmittedException
+     *
      * @return mixed
      */
     public function handleRequestWithJSONContent(Request $request, FormInterface $form, array $additionalData = [], $clearMissing = true)
@@ -40,6 +46,9 @@ trait JSONHandlerTrait
      * @param FormInterface $form
      * @param array $data
      * @param bool $clearMissing
+     *
+     * @throws IncorrectDataException
+     * @throws AlreadySubmittedException
      *
      * @return mixed
      */
@@ -56,6 +65,8 @@ trait JSONHandlerTrait
 
     /**
      * @param FormInterface $form
+     *
+     * @throws IncorrectDataException
      */
     public function extractErrors(FormInterface $form)
     {
@@ -71,7 +82,10 @@ trait JSONHandlerTrait
                 $errors[$name] = [];
             }
 
-            $errors[$name][] = sprintf($error->getMessageTemplate(), $error->getMessageParameters());
+            /** @var ConstraintViolation $cause */
+            $cause = $error->getCause();
+            $errors[$name]['message'] = sprintf($error->getMessageTemplate(), $error->getMessageParameters());
+            $errors[$name]['name'] = $cause->getConstraint()::getErrorName($cause->getCode());
         }
 
         foreach ($errors as &$fieldsErrors) {
@@ -80,6 +94,6 @@ trait JSONHandlerTrait
 
         unset($fieldsErrors);
 
-        throw new Exception($errors);
+        throw new IncorrectDataException($errors);
     }
 }

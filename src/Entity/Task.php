@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="tasks")
@@ -30,6 +31,8 @@ class Task implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\NotNull()
      */
     private $id;
 
@@ -40,6 +43,8 @@ class Task implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\NotBlank()
      */
     private $title;
 
@@ -50,6 +55,8 @@ class Task implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\NotBlank()
      */
     private $description;
 
@@ -60,6 +67,8 @@ class Task implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\GreaterThan(value="0")
      */
     private $priority = 1;
 
@@ -70,6 +79,8 @@ class Task implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\GreaterThan(value="0")
      */
     private $estimate = 1;
 
@@ -80,6 +91,8 @@ class Task implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\Collection()
      */
     private $executors;
 
@@ -90,6 +103,8 @@ class Task implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\Collection()
      */
     private $sessions;
 

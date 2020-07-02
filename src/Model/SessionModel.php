@@ -4,26 +4,35 @@ namespace App\Model;
 
 use App\Entity\Task;
 use App\Entity\User;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class SessionModel
 {
     /**
      * @var int|null
+     *
+     * @Assert\NotNull()
      */
     private $id;
 
     /**
      * @var User|null
+     *
+     * @Assert\NotNull()
      */
     private $user;
 
     /**
      * @var Task|null
+     *
+     * @Assert\NotNull()
      */
     private $task;
 
     /**
      * @var int|null
+     *
+     * @Assert\GreaterThan(value="0")
      */
     private $timestamp;
 

@@ -3,6 +3,7 @@
 namespace App\Controller\API;
 
 use App\Entity\UpdatableInterface;
+use App\Exception\IncorrectDataException;
 use App\Util\MessageUtil;
 use App\Util\Payload;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -11,6 +12,7 @@ use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Form\Exception\AlreadySubmittedException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -71,7 +73,7 @@ abstract class AbstractCRUDController extends AbstractFOSRestController
 
         $paginatedResult = $this->getRepository()->getPaginatedData($data, $paginator);
 
-        return $this->getResponse($paginatedResult, MessageUtil::SUCCESS, Response::HTTP_OK, $serializationGroups);
+        return $this->getResponse($paginatedResult, $serializationGroups, MessageUtil::SUCCESS, Response::HTTP_OK);
     }
 
     /**
@@ -88,10 +90,10 @@ abstract class AbstractCRUDController extends AbstractFOSRestController
 
         try {
             $object = $this->handleRequestWithJSONContent($request, $form);
-        } catch (Throwable $e) {
-            $this->logCriticalError('Error while handling form.', $e);
-
-            return $this->getResponse(MessageUtil::VALIDATE_FORM, MessageUtil::ERROR, 400);
+        } catch (IncorrectDataException $e) {
+            return $this->getResponse('', [], MessageUtil::ERROR, $e->getHttpCode(), $e->getErrors());
+        } catch (AlreadySubmittedException $e) {
+            return $this->getResponse('', [], MessageUtil::ERROR, Response::HTTP_BAD_REQUEST, $e->getMessage());
         }
 
 
@@ -100,10 +102,10 @@ abstract class AbstractCRUDController extends AbstractFOSRestController
         } catch (Throwable $e) {
             $this->logCriticalError(sprintf('Error while saving: %s.', $className), $e);
 
-            return $this->getResponse(MessageUtil::CAN_NOT_SAVE, MessageUtil::ERROR, 400);
+            return $this->getResponse('', [], 400, Response::HTTP_BAD_REQUEST, MessageUtil::CAN_NOT_SAVE);
         }
 
-        return $this->getResponse($object, MessageUtil::SUCCESS, Response::HTTP_OK, $serializationGroups);
+        return $this->getResponse($object, $serializationGroups, MessageUtil::SUCCESS, Response::HTTP_OK);
     }
 
     /**
@@ -119,13 +121,19 @@ abstract class AbstractCRUDController extends AbstractFOSRestController
         $object = $this->getRepository()->find($data['id'] ?? -1);
 
         if (!$object) {
-            return $this->getResponse(null,MessageUtil::CAN_NOT_FIND_OBJECT, 400);
+            return $this->getResponse('', [], MessageUtil::ERROR, Response::HTTP_BAD_REQUEST, MessageUtil::CAN_NOT_FIND_OBJECT);
         }
 
         $form = $this->createForm($formType);
 
         /** @var UpdatableInterface $updatedObject */
-        $updatedObject = $this->handleRequestWithJSONContent($request, $form);
+        try {
+            $updatedObject = $this->handleRequestWithJSONContent($request, $form);
+        } catch (IncorrectDataException $e) {
+            return $this->getResponse('', [], MessageUtil::ERROR, $e->getHttpCode(), $e->getErrors());
+        } catch (AlreadySubmittedException $e) {
+            return $this->getResponse('', [], MessageUtil::ERROR, Response::HTTP_BAD_REQUEST, $e->getMessage());
+        }
 
         $object->update($updatedObject);
 
@@ -144,6 +152,9 @@ abstract class AbstractCRUDController extends AbstractFOSRestController
         $data = $this->decodeJsonContent($request);
 
         $user = $this->getRepository()->find($data['id'] ?? -1);
+        if (!$user) {
+            return $this->getResponse();
+        }
 
         $manager = $this->getDoctrine()->getManager();
         $manager->remove($user);
@@ -154,13 +165,14 @@ abstract class AbstractCRUDController extends AbstractFOSRestController
 
     /**
      * @param mixed $rawData
-     * @param string $status
-     * @param int $httpCode
      * @param array $groups
      *
+     * @param string $status
+     * @param int $httpCode
+     * @param array $errors
      * @return Response
      */
-    protected function getResponse($rawData = '', string $status = MessageUtil::SUCCESS, int $httpCode = Response::HTTP_OK, array $groups = [])
+    protected function getResponse($rawData = '', array $groups = [], string $status = MessageUtil::SUCCESS, int $httpCode = Response::HTTP_OK, $errors = null)
     {
         $groups[] = 'Default';
 
@@ -168,7 +180,13 @@ abstract class AbstractCRUDController extends AbstractFOSRestController
             ->setGroups($groups)
             ->setSerializeNull(true);
 
-        $payload = Payload::create($rawData, $status, $httpCode);
+        if ($errors) {
+            $errors = is_array($errors) ? $errors : [$errors];
+        } else {
+            $errors = [];
+        }
+
+        $payload = Payload::create($rawData, $status, $httpCode, $errors);
         $serializedData = $this->serializer->serialize($payload, 'json', $context);
 
         return new JsonResponse($serializedData, $payload->getHttpCode(), [], true);

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="users")
@@ -30,6 +31,8 @@ class User implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\NotNull()
      */
     private $id;
 
@@ -40,6 +43,8 @@ class User implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\NotBlank()
      */
     private $firstName;
 
@@ -50,6 +55,8 @@ class User implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\NotBlank()
      */
     private $secondName;
 
@@ -70,6 +77,8 @@ class User implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\Timezone()
      */
     private $timezone;
 
@@ -85,6 +94,8 @@ class User implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\Collection()
      */
     private $tasks;
 
@@ -95,6 +106,8 @@ class User implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
+     *
+     * @Assert\Collection()
      */
     private $sessions;
 
