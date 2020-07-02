@@ -5,6 +5,7 @@ namespace App\Controller\API;
 use App\Entity\UpdatableInterface;
 use App\Util\MessageUtil;
 use App\Util\Payload;
+use Doctrine\Common\Persistence\ObjectRepository;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
@@ -59,17 +60,16 @@ abstract class AbstractCRUDController extends AbstractFOSRestController
 
     /**
      * @param Request $request
-     * @param string $className
      * @param PaginatorInterface $paginator
      * @param array $serializationGroups
      *
      * @return Response
      */
-    public function getItemsAction(Request $request, string $className, PaginatorInterface $paginator, array $serializationGroups)
+    public function getItemsAction(Request $request, PaginatorInterface $paginator, array $serializationGroups)
     {
         $data = $this->decodeJsonContent($request);
 
-        $paginatedResult = $this->getDoctrine()->getManager()->getRepository($className)->getPaginatedData($data, $paginator);
+        $paginatedResult = $this->getRepository()->getPaginatedData($data, $paginator);
 
         return $this->getResponse($paginatedResult, MessageUtil::SUCCESS, Response::HTTP_OK, $serializationGroups);
     }
@@ -109,15 +109,14 @@ abstract class AbstractCRUDController extends AbstractFOSRestController
     /**
      * @param Request $request
      * @param string $formType
-     * @param string $className
      *
      * @return Response
      */
-    public function updateItemAction(Request $request, string $formType, string $className)
+    public function updateItemAction(Request $request, string $formType)
     {
         $data = $this->decodeJsonContent($request);
         /** @var UpdatableInterface $object */
-        $object = $this->getDoctrine()->getRepository($className)->find($data['id'] ?? -1);
+        $object = $this->getRepository()->find($data['id'] ?? -1);
 
         if (!$object) {
             return $this->getResponse(null,MessageUtil::CAN_NOT_FIND_OBJECT, 400);
@@ -137,15 +136,14 @@ abstract class AbstractCRUDController extends AbstractFOSRestController
 
     /**
      * @param Request $request
-     * @param string $className
      *
      * @return Response
      */
-    public function deleteItemAction(Request $request, string $className)
+    public function deleteItemAction(Request $request)
     {
         $data = $this->decodeJsonContent($request);
 
-        $user = $this->getDoctrine()->getRepository($className)->find($data['id'] ?? -1);
+        $user = $this->getRepository()->find($data['id'] ?? -1);
 
         $manager = $this->getDoctrine()->getManager();
         $manager->remove($user);
@@ -201,5 +199,8 @@ abstract class AbstractCRUDController extends AbstractFOSRestController
         $manager->flush();
     }
 
+    /**
+     * @return ObjectRepository
+     */
     protected abstract function getRepository();
 }
