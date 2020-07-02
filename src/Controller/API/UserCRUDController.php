@@ -5,6 +5,7 @@ namespace App\Controller\API;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Form\UserFormType;
+use App\Repository\UserRepository;
 use App\Util\MessageUtil;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Knp\Component\Pager\PaginatorInterface;
@@ -15,7 +16,7 @@ use Throwable;
 /**
  * @Rest\Route(path="api/users")
  */
-class UserCRUDController extends BaseCRUDController
+class UserCRUDController extends AbstractCRUDController
 {
     /**
      * @Rest\Get(name="get_users")
@@ -63,5 +64,13 @@ class UserCRUDController extends BaseCRUDController
     public function deleteUserAction(Request $request)
     {
         return $this->deleteItemAction($request, User::class);
+    }
+
+    /**
+     * @return UserRepository
+     */
+    protected function getRepository()
+    {
+        return $this->getDoctrine()->getRepository(User::class);
     }
 }

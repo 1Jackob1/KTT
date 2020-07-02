@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
-class BaseCRUDController extends AbstractFOSRestController
+abstract class AbstractCRUDController extends AbstractFOSRestController
 {
     use JSONHandlerTrait;
 
@@ -34,9 +34,9 @@ class BaseCRUDController extends AbstractFOSRestController
      *
      * @param SerializerInterface $serializer
      *
-     * @return BaseCRUDController
+     * @return AbstractCRUDController
      */
-    public function setSerializer(SerializerInterface $serializer): BaseCRUDController
+    public function setSerializer(SerializerInterface $serializer): AbstractCRUDController
     {
         $this->serializer = $serializer;
 
@@ -48,9 +48,9 @@ class BaseCRUDController extends AbstractFOSRestController
      *
      * @param LoggerInterface $logger
      *
-     * @return BaseCRUDController
+     * @return AbstractCRUDController
      */
-    public function setLogger(LoggerInterface $logger): BaseCRUDController
+    public function setLogger(LoggerInterface $logger): AbstractCRUDController
     {
         $this->logger = $logger;
 
@@ -123,7 +123,7 @@ class BaseCRUDController extends AbstractFOSRestController
             return $this->getResponse(null,MessageUtil::CAN_NOT_FIND_OBJECT, 400);
         }
 
-        $form = $this->createForm($formType, $object);
+        $form = $this->createForm($formType);
 
         /** @var UpdatableInterface $updatedObject */
         $updatedObject = $this->handleRequestWithJSONContent($request, $form);
@@ -200,4 +200,6 @@ class BaseCRUDController extends AbstractFOSRestController
         $manager->persist($object);
         $manager->flush();
     }
+
+    protected abstract function getRepository();
 }

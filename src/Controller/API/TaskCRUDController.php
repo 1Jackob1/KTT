@@ -5,6 +5,7 @@ namespace App\Controller\API;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Form\TaskFormType;
+use App\Repository\TaskRepository;
 use App\Util\MessageUtil;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Knp\Component\Pager\PaginatorInterface;
@@ -15,7 +16,7 @@ use Throwable;
 /**
  * @Rest\Route(path="api/tasks")
  */
-class TaskCRUDController extends BaseCRUDController
+class TaskCRUDController extends AbstractCRUDController
 {
 
     /**
@@ -50,7 +51,7 @@ class TaskCRUDController extends BaseCRUDController
      *
      * @return Response
      */
-    public function updateUserAction(Request $request)
+    public function updateTaskAction(Request $request)
     {
         return $this->updateItemAction($request, TaskFormType::class, Task::class);
     }
@@ -65,5 +66,13 @@ class TaskCRUDController extends BaseCRUDController
     public function deleteTaskAction(Request $request)
     {
         return $this->deleteItemAction($request, Task::class);
+    }
+
+    /**
+     * @return TaskRepository
+     */
+    protected function getRepository()
+    {
+       return $this->getDoctrine()->getRepository(Task::class);
     }
 }

@@ -13,7 +13,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TaskFormType extends AbstractType
 {
-
+    /**
+     * @inheritDoc
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder

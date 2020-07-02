@@ -293,8 +293,13 @@ class Task implements TimestampableInterface, UpdatableInterface
             ->setDescription($task->getDescription())
             ->setEstimate($task->getEstimate())
             ->setPriority($task->getPriority())
-            ->setExecutors($task->getExecutors())
             ->setSessions($task->getSessions())
+            ->setExecutors(new ArrayCollection())
         ;
+        
+        /** @var User $executor */
+        foreach ($task->getExecutors() as $executor) {
+            $executor->addTask($this);
+        }
     }
 }
