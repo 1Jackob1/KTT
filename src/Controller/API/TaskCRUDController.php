@@ -2,6 +2,7 @@
 
 namespace App\Controller\API;
 
+use App\Entity\Session;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Form\TaskFormType;
@@ -29,7 +30,7 @@ class TaskCRUDController extends AbstractCRUDController
      */
     public function getTasksAction(Request $request, PaginatorInterface $paginator)
     {
-        return $this->getItemsAction($request, Task::class, $paginator, [User::FULL_CARD, Task::FULL_CARD]);
+        return $this->getItemsAction($request, $paginator, [User::FULL_CARD, Task::FULL_CARD, Session::FULL_CARD]);
     }
 
     /**
@@ -41,7 +42,7 @@ class TaskCRUDController extends AbstractCRUDController
      */
     public function createTaskAction(Request $request)
     {
-        return $this->createItemAction($request, TaskFormType::class, Task::class, [User::FULL_CARD, Task::FULL_CARD]);
+        return $this->createItemAction($request, TaskFormType::class, Task::class, [User::FULL_CARD, Task::FULL_CARD, Session::FULL_CARD]);
     }
 
     /**
@@ -53,7 +54,7 @@ class TaskCRUDController extends AbstractCRUDController
      */
     public function updateTaskAction(Request $request)
     {
-        return $this->updateItemAction($request, TaskFormType::class, Task::class);
+        return $this->updateItemAction($request, TaskFormType::class);
     }
 
     /**
@@ -65,7 +66,7 @@ class TaskCRUDController extends AbstractCRUDController
      */
     public function deleteTaskAction(Request $request)
     {
-        return $this->deleteItemAction($request, Task::class);
+        return $this->deleteItemAction($request);
     }
 
     /**

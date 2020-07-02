@@ -5,14 +5,20 @@ namespace App\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Table(name="sessions")
  * @ORM\Entity(repositoryClass="App\Repository\SessionRepository")
+ * @ORM\HasLifecycleCallbacks()
+ *
+ * @JMS\ExclusionPolicy("all")
  */
 class Session implements TimestampableInterface
 {
     use TimestampableTrait;
+
+    public const FULL_CARD = 'full_card';
 
     /**
      * @var int
@@ -20,6 +26,9 @@ class Session implements TimestampableInterface
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(name="id", type="integer", nullable=false)
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={Session::FULL_CARD})
      */
     private $id;
 
@@ -28,6 +37,9 @@ class Session implements TimestampableInterface
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="sessions")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={Session::FULL_CARD})
      */
     private $user;
 
@@ -36,6 +48,9 @@ class Session implements TimestampableInterface
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Task", inversedBy="sessions")
      * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={Session::FULL_CARD})
      */
     private $task;
 
@@ -43,6 +58,9 @@ class Session implements TimestampableInterface
      * @var DateTime
      *
      * @ORM\Column(name="start_date", type="datetime", nullable=false)
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={Session::FULL_CARD})
      */
     private $startDate;
 
@@ -50,6 +68,9 @@ class Session implements TimestampableInterface
      * @var DateTime|null
      *
      * @ORM\Column(name="end_date", type="datetime", nullable=true)
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={Session::FULL_CARD})
      */
     private $endDate;
 
@@ -57,6 +78,9 @@ class Session implements TimestampableInterface
      * @var bool
      *
      * @ORM\Column(name="valid", type="boolean", nullable=false, options={"default" = true})
+     *
+     * @JMS\Expose()
+     * @JMS\Groups(groups={Session::FULL_CARD})
      */
     private $valid = true;
 
