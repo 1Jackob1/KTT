@@ -15,3 +15,6 @@ migrations-diff:
 
 migrations-latest:
 	$(PHP) bin/console doctrine:migrations:migrate latest
+
+clear-cache:
+	$(PHP) bin/console cache:clear --env=dev
