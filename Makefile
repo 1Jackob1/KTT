@@ -27,3 +27,6 @@ test-reload-db:
 	$(PHP) bin/console doctrine:database:drop --force --env=test --no-debug
 	$(PHP) bin/console doctrine:database:create --env=test --no-debug
 	$(PHP) bin/console doctrine:migrations:migrate --env=test latest --no-interaction
+
+run-tests:
+	$(PHP) bin/phpunit --testdox
