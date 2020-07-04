@@ -31,8 +31,6 @@ class Task implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
-     *
-     * @Assert\NotNull()
      */
     private $id;
 
@@ -91,8 +89,6 @@ class Task implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
-     *
-     * @Assert\Collection()
      */
     private $executors;
 
@@ -118,9 +114,18 @@ class Task implements TimestampableInterface, UpdatableInterface
     }
 
     /**
+     * Empty method only for form submitting
+     *
+     * @param int $id
+     */
+    public function setId(int $id)
+    {
+    }
+
+    /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

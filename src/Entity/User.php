@@ -31,8 +31,6 @@ class User implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
-     *
-     * @Assert\NotNull()
      */
     private $id;
 
@@ -94,8 +92,6 @@ class User implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
-     *
-     * @Assert\Collection()
      */
     private $tasks;
 
@@ -106,8 +102,6 @@ class User implements TimestampableInterface, UpdatableInterface
      *
      * @JMS\Expose()
      * @JMS\Groups(groups={User::FULL_CARD})
-     *
-     * @Assert\Collection()
      */
     private $sessions;
 
@@ -126,6 +120,15 @@ class User implements TimestampableInterface, UpdatableInterface
     public function __toString()
     {
         return $this->getId() . ' ' . $this->getFirstName() . ' ' . $this->getSecondName() . ' ' . $this->getLastName();
+    }
+
+    /**
+     * Empty method only for form submitting
+     *
+     * @param int $id
+     */
+    public function setId(int $id)
+    {
     }
 
     /**
