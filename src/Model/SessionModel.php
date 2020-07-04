@@ -9,13 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SessionModel
 {
     /**
-     * @var int|null
-     *
-     * @Assert\NotNull()
-     */
-    private $id;
-
-    /**
      * @var User|null
      *
      * @Assert\NotNull()
@@ -35,26 +28,6 @@ class SessionModel
      * @Assert\GreaterThan(value="0")
      */
     private $timestamp;
-
-    /**
-     * @param int|null $id
-     *
-     * @return SessionModel
-     */
-    public function setId(?int $id): SessionModel
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     /**
      * @param User|null $user
