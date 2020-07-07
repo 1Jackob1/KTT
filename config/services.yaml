@@ -12,3 +12,15 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+
+    App\Controller\API\UserCRUDController:
+        calls:
+            - [ setFinder, ['@fos_elastica.finder.app_user.user']]
+
+    App\Controller\API\TaskCRUDController:
+        calls:
+            - [ setFinder, ['@fos_elastica.finder.app_task.task']]
+
+    App\Controller\API\SessionCRUDController:
+        calls:
+            - [ setFinder, ['@fos_elastica.finder.app_session.session']]

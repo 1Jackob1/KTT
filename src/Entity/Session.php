@@ -19,6 +19,7 @@ class Session implements TimestampableInterface
     use TimestampableTrait;
 
     public const FULL_CARD = 'full_card';
+    public const ELASTICSEARCH_CARD = 'elastica';
 
     /**
      * @var int
@@ -28,7 +29,7 @@ class Session implements TimestampableInterface
      * @ORM\Column(name="id", type="integer", nullable=false)
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={Session::FULL_CARD})
+     * @JMS\Groups(groups={Session::FULL_CARD, Session::ELASTICSEARCH_CARD})
      */
     private $id;
 
@@ -39,7 +40,7 @@ class Session implements TimestampableInterface
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={Session::FULL_CARD})
+     * @JMS\Groups(groups={Session::FULL_CARD, Session::ELASTICSEARCH_CARD})
      */
     private $user;
 
@@ -50,7 +51,7 @@ class Session implements TimestampableInterface
      * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={Session::FULL_CARD})
+     * @JMS\Groups(groups={Session::FULL_CARD, Session::ELASTICSEARCH_CARD})
      */
     private $task;
 
@@ -60,7 +61,7 @@ class Session implements TimestampableInterface
      * @ORM\Column(name="start_date", type="datetime", nullable=false)
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={Session::FULL_CARD})
+     * @JMS\Groups(groups={Session::FULL_CARD, Session::ELASTICSEARCH_CARD})
      */
     private $startDate;
 
@@ -70,7 +71,7 @@ class Session implements TimestampableInterface
      * @ORM\Column(name="end_date", type="datetime", nullable=true)
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={Session::FULL_CARD})
+     * @JMS\Groups(groups={Session::FULL_CARD, Session::ELASTICSEARCH_CARD})
      */
     private $endDate;
 
@@ -80,9 +81,17 @@ class Session implements TimestampableInterface
      * @ORM\Column(name="valid", type="boolean", nullable=false, options={"default" = true})
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={Session::FULL_CARD})
+     * @JMS\Groups(groups={Session::FULL_CARD, Session::ELASTICSEARCH_CARD})
      */
     private $valid = true;
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string) $this->getId();
+    }
 
     /**
      * @return int
