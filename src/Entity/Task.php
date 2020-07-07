@@ -21,6 +21,7 @@ class Task implements TimestampableInterface, UpdatableInterface
     use TimestampableTrait;
 
     public const FULL_CARD = 'full_card';
+    public const ELASTICSEARCH_CARD = 'elastica';
 
     /**
      * @var int
@@ -30,7 +31,7 @@ class Task implements TimestampableInterface, UpdatableInterface
      * @ORM\Column(name="id", type="integer", nullable=false)
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={User::FULL_CARD})
+     * @JMS\Groups(groups={Task::FULL_CARD, Task::ELASTICSEARCH_CARD})
      */
     private $id;
 
@@ -40,7 +41,7 @@ class Task implements TimestampableInterface, UpdatableInterface
      * @ORM\Column(name="title", type="text", nullable=false)
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={User::FULL_CARD})
+     * @JMS\Groups(groups={Task::FULL_CARD, Task::ELASTICSEARCH_CARD})
      *
      * @Assert\NotBlank()
      */
@@ -52,7 +53,7 @@ class Task implements TimestampableInterface, UpdatableInterface
      * @ORM\Column(name="description", type="text", nullable=false)
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={User::FULL_CARD})
+     * @JMS\Groups(groups={Task::FULL_CARD, Task::ELASTICSEARCH_CARD})
      *
      * @Assert\NotBlank()
      */
@@ -64,7 +65,7 @@ class Task implements TimestampableInterface, UpdatableInterface
      * @ORM\Column(name="priority", type="integer", nullable=false, options={"default" = 1})
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={User::FULL_CARD})
+     * @JMS\Groups(groups={Task::FULL_CARD, Task::ELASTICSEARCH_CARD})
      *
      * @Assert\GreaterThan(value="0")
      */
@@ -76,7 +77,7 @@ class Task implements TimestampableInterface, UpdatableInterface
      * @ORM\Column(name="estimate", type="integer", nullable=true)
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={User::FULL_CARD})
+     * @JMS\Groups(groups={Task::FULL_CARD, Task::ELASTICSEARCH_CARD})
      *
      * @Assert\GreaterThan(value="0")
      */
@@ -88,7 +89,7 @@ class Task implements TimestampableInterface, UpdatableInterface
      * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="tasks")
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={User::FULL_CARD})
+     * @JMS\Groups(groups={Task::FULL_CARD})
      */
     private $executors;
 
@@ -98,7 +99,7 @@ class Task implements TimestampableInterface, UpdatableInterface
      * @ORM\OneToMany(targetEntity="App\Entity\Session", mappedBy="task")
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={User::FULL_CARD})
+     * @JMS\Groups(groups={Task::FULL_CARD})
      *
      * @Assert\Collection()
      */
@@ -111,6 +112,14 @@ class Task implements TimestampableInterface, UpdatableInterface
     {
         $this->executors = new ArrayCollection();
         $this->sessions = new ArrayCollection();
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getTitle() ?? 'n/a';
     }
 
     /**

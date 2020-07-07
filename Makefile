@@ -30,3 +30,6 @@ test-reload-db:
 
 run-tests:
 	$(PHP) bin/phpunit --testdox
+
+sync-with-elastica:
+	$(PHP) bin/console fos:elastica:populate

@@ -7,6 +7,10 @@ use App\Exception\IncorrectDataException;
 use App\Util\MessageUtil;
 use App\Util\Payload;
 use Doctrine\Common\Persistence\ObjectRepository;
+use Elastica\Query;
+use Elastica\Query\BoolQuery;
+use Elastica\Query\Term;
+use FOS\ElasticaBundle\Finder\TransformedFinder;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
@@ -21,6 +25,23 @@ use Throwable;
 abstract class AbstractCRUDController extends AbstractFOSRestController
 {
     use JSONHandlerTrait;
+
+    /**
+     * @var TransformedFinder
+     */
+    private $finder;
+
+    /**
+     * @param TransformedFinder $finder
+     *
+     * @return self
+     */
+    public function setFinder(TransformedFinder $finder): self
+    {
+        $this->finder = $finder;
+
+        return $this;
+    }
 
     /**
      * @var SerializerInterface
@@ -71,7 +92,21 @@ abstract class AbstractCRUDController extends AbstractFOSRestController
     {
         $data = $this->decodeJsonContent($request);
 
-        $paginatedResult = $this->getRepository()->getPaginatedData($data, $paginator);
+        $page = $data['_page'] ?? 1;
+        $perPage = $data['_per_page'] ?? 5;
+
+        unset($data['_page'], $data['_per_page']);
+
+        $andX = new BoolQuery();
+        $data['filter'] = $data['filter'] ?? [];
+        foreach ($data['filter'] as $field => $value) {
+            $match = new Query\Match();
+            $match->setField($field, $value);
+            $andX->addMust($match);
+        }
+
+        $result = $this->finder->createPaginatorAdapter($andX);
+        $paginatedResult = $paginator->paginate($result, $page, $perPage);
 
         return $this->getResponse($paginatedResult, $serializationGroups, MessageUtil::SUCCESS, Response::HTTP_OK);
     }

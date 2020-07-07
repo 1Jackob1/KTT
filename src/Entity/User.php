@@ -21,6 +21,7 @@ class User implements TimestampableInterface, UpdatableInterface
     use TimestampableTrait;
 
     public const FULL_CARD = 'full_card';
+    public const ELASTICSEARCH_CARD = 'elastica';
 
     /**
      * @var int
@@ -30,7 +31,7 @@ class User implements TimestampableInterface, UpdatableInterface
      * @ORM\Column(name="id", type="integer", nullable=false)
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={User::FULL_CARD})
+     * @JMS\Groups(groups={User::FULL_CARD, User::ELASTICSEARCH_CARD})
      */
     private $id;
 
@@ -40,7 +41,7 @@ class User implements TimestampableInterface, UpdatableInterface
      * @ORM\Column(name="first_name", type="string", nullable=false)
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={User::FULL_CARD})
+     * @JMS\Groups(groups={User::FULL_CARD, User::ELASTICSEARCH_CARD})
      *
      * @Assert\NotBlank()
      */
@@ -52,7 +53,7 @@ class User implements TimestampableInterface, UpdatableInterface
      * @ORM\Column(name="second_name", type="string", nullable=false)
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={User::FULL_CARD})
+     * @JMS\Groups(groups={User::FULL_CARD, User::ELASTICSEARCH_CARD})
      *
      * @Assert\NotBlank()
      */
@@ -64,7 +65,7 @@ class User implements TimestampableInterface, UpdatableInterface
      * @ORM\Column(name="last_name", type="string", nullable=true)
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={User::FULL_CARD})
+     * @JMS\Groups(groups={User::FULL_CARD, User::ELASTICSEARCH_CARD})
      */
     private $lastName;
 
@@ -74,7 +75,7 @@ class User implements TimestampableInterface, UpdatableInterface
      * @ORM\Column(name="timezone", type="string", nullable=false, options={"default" = "Asia/Vladivostok"})
      *
      * @JMS\Expose()
-     * @JMS\Groups(groups={User::FULL_CARD})
+     * @JMS\Groups(groups={User::FULL_CARD, User::ELASTICSEARCH_CARD})
      *
      * @Assert\Timezone()
      */
