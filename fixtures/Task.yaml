@@ -1,0 +1,8 @@
+App\Entity\Task:
+    fixture_task_{0..10}:
+        title: <word()>
+        description: <text()>
+        priority: <numberBetween(1, 10)>
+        estimate: <numberBetween(1, 3000)>
+        sessions:
+            - '@fixture_session_<identity($current)>'
