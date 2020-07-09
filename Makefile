@@ -39,3 +39,5 @@ fixtures-dev:
 
 fixtures-test:
 	$(PHP) bin/console hautelook:fixtures:load --purge-with-truncate -e test
+
+preparations: create-db migrations-latest fixtures-dev sync-with-elastica
