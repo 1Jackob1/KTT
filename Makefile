@@ -28,8 +28,14 @@ test-reload-db:
 	$(PHP) bin/console doctrine:database:create --env=test --no-debug
 	$(PHP) bin/console doctrine:migrations:migrate --env=test latest --no-interaction
 
-run-tests:
+run-tests: fixtures-test
 	$(PHP) bin/phpunit --testdox
 
 sync-with-elastica:
 	$(PHP) bin/console fos:elastica:populate
+
+fixtures-dev:
+	$(PHP) bin/console hautelook:fixtures:load --purge-with-truncate
+
+fixtures-test:
+	$(PHP) bin/console hautelook:fixtures:load --purge-with-truncate -e test
