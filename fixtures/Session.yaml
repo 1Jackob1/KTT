@@ -1,0 +1,4 @@
+App\Entity\Session:
+    fixture_session_{0..10}:
+        startDate: <dateTimeBetween('-2 month', '-1 month')>
+        endDate: <dateTimeBetween('-1 month')>

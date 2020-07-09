@@ -1,0 +1,10 @@
+App\Entity\User:
+    fixture_user_{0..10}:
+        firstName:  <firstName()>
+        secondName:  <lastName()>
+        lastName:  <lastName()>
+        timezone: <timezone()>
+        tasks:
+            - '@fixture_task_<identity($current)>'
+        sessions:
+            - '@fixture_session_<identity($current)>'
