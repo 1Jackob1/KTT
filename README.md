@@ -25,15 +25,17 @@ To run test you must initialize test database first. \
 
 Usage
 -
-####Users and Tasks
+
+#### Users and Tasks
+
 * To create user|task you can request `POST api/(users|tasks)`, request body like fields in `(User|Task)FormType.php`
 * To update user|task you can request `PATCH api/(users|tasks)` , request body like fields in `(User|Task)FormType.php`
 
-####Sessions
+#### Sessions
 * To start session you can request `POST api/sessions/start`
 * To close session you can request `POST api/sessions/stop`
 
-####Common
+#### Common
 * To get entity you can request `GET api/(users|tasks|sessions)`, you can specify `_per_page` and `_page` to navigate and `filter` to filter values. In `filter` field you must specify entity fields
 * To delete entity you can request `DELETE api/(users|tasks|sessions)`, produce only entity `id`
 
